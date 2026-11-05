@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NordicBike – cykler til hverdag, byliv og eventyr. En demo-webshop til cloud-undervisning.">
+  <meta name="theme-color" content="#103c35">
+  <title>NordicBike | Cykler til din hverdag</title>
+  <style>
+    /* NordicBike - Version 1.0. Alt ligger i denne ene HTML-fil. */
+    :root {
+      --pine: #103c35;
+      --pine-dark: #092a26;
+      --mint: #c7f48a;
+      --cream: #f7f6ef;
+      --white: #fff;
+      --ink: #16342f;
+      --muted: #61736d;
+      --line: #e0e8df;
+      --radius: 22px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--cream);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible { outline: 3px solid #67aefb; outline-offset: 3px; }
+    .container { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .skip-link { position: absolute; top: -60px; left: 16px; z-index: 100; background: white; padding: 10px; }
+    .skip-link:focus { top: 10px; }
+
+    .announcement { background: var(--pine-dark); color: #e9f6e6; text-align: center; padding: 9px 16px; font-size: 12px; letter-spacing: .055em; }
+    header { background: rgba(247,246,239,.97); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 30; backdrop-filter: blur(10px); }
+    .nav { display: flex; align-items: center; justify-content: space-between; min-height: 80px; gap: 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-size: 21px; font-weight: 850; letter-spacing: -.07em; white-space: nowrap; }
+    .brand-mark { width: 35px; height: 35px; background: var(--pine); border-radius: 11px; display: inline-grid; place-items: center; color: var(--mint); }
+    .brand-mark svg { width: 26px; }
+    .nav-links { display: flex; gap: 31px; font-size: 14px; font-weight: 650; }
+    .nav-links a:hover, .footer-links a:hover { text-decoration: underline; text-underline-offset: 4px; }
+    .cart-button { display: inline-flex; gap: 10px; align-items: center; border: 1px solid #bed2c4; background: white; color: var(--ink); border-radius: 100px; padding: 11px 16px; cursor: pointer; font-weight: 750; }
+    .cart-count { background: var(--pine); color: white; border-radius: 50%; min-width: 23px; height: 23px; display: inline-grid; place-items: center; font-size: 12px; }
+
+    .hero { background: var(--pine); color: white; overflow: hidden; }
+    .hero-grid { min-height: 545px; display: grid; grid-template-columns: 1fr 1.12fr; align-items: center; gap: 20px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: .16em; }
+    .eyebrow::before { content: ""; width: 17px; height: 2px; background: var(--mint); }
+    .hero h1 { font-size: clamp(48px, 6vw, 78px); line-height: 1.05; letter-spacing: -.075em; max-width: 620px; margin: 21px 0 20px; }
+    .hero h1 span { color: var(--mint); }
+    .hero p { max-width: 430px; color: #c7ded5; font-size: 17px; line-height: 1.75; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 29px; }
+    .btn { display: inline-flex; justify-content: center; align-items: center; border-radius: 100px; padding: 14px 23px; font-weight: 800; font-size: 14px; cursor: pointer; border: 1px solid transparent; transition: transform .15s ease, background .15s ease; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: var(--pine-dark); background: var(--mint); }
+    .btn-primary:hover { background: #dbffb0; }
+    .btn-outline { color: white; border-color: #70968c; background: transparent; }
+    .hero-art { position: relative; display: flex; align-items: center; justify-content: center; min-height: 500px; isolation: isolate; }
+    .hero-art::before { content: ""; position: absolute; width: 470px; height: 470px; max-width: 93%; border-radius: 50%; background: #2c5a4b; z-index: -2; }
+    .hero-art::after { content: ""; position: absolute; width: 370px; height: 370px; max-width: 75%; border-radius: 50%; border: 1px solid #86b19a70; z-index: -1; }
+    .hero-bike { width: 112%; max-width: 660px; color: var(--mint); filter: drop-shadow(0 25px 17px #041d1799); }
+    .hero-caption { position: absolute; right: 3%; bottom: 51px; transform: rotate(-6deg); color: #d0e6dc; font-size: 12px; text-transform: uppercase; letter-spacing: .18em; font-weight: 800; }
+
+    .highlights { background: #eaf1e7; border-bottom: 1px solid var(--line); }
+    .highlights-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+    .highlight { padding: 21px 10px; display: flex; gap: 13px; align-items: center; justify-content: center; font-size: 13px; font-weight: 760; }
+    .highlight + .highlight { border-left: 1px solid #cddfcf; }
+    .highlight span { font-size: 21px; }
+
+    section { scroll-margin-top: 110px; }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 27px; }
+    .section-head h2, .story h2 { letter-spacing: -.055em; line-height: 1.11; font-size: clamp(32px, 4vw, 49px); margin: 10px 0 0; }
+    .section-head p { max-width: 360px; line-height: 1.65; color: var(--muted); margin: 0; }
+    .catalog { padding: 82px 0 88px; }
+    .section-label { font-size: 11px; color: #497560; font-weight: 850; letter-spacing: .17em; text-transform: uppercase; }
+    .filters { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 25px; }
+    .filter { background: white; border: 1px solid #d5e1d7; color: #3d5e52; padding: 10px 17px; font-weight: 700; font-size: 13px; border-radius: 40px; cursor: pointer; }
+    .filter.active { background: var(--pine); color: white; border-color: var(--pine); }
+    .products { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .product { background: white; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: 0 7px 16px #0b36220a; display: flex; flex-direction: column; }
+    .product[hidden] { display: none; }
+    .product-visual { height: 205px; display: grid; place-items: center; position: relative; overflow: hidden; }
+    .product-visual::before { content: ""; width: 190px; height: 190px; position: absolute; top: -50px; right: -50px; border-radius: 50%; background: #ffffff75; }
+    .product-visual svg { width: 104%; max-width: 315px; position: relative; z-index: 1; }
+    .product-visual.sage { background: #d9e7d9; color: #284b42; }
+    .product-visual.blue { background: #d6e6ef; color: #305475; }
+    .product-visual.peach { background: #f5e3d1; color: #9d5e3d; }
+    .product-visual.lime { background: #e5efcf; color: #506f39; }
+    .product-tag { position: absolute; z-index: 2; top: 13px; left: 13px; background: #fffdf2; color: #234a38; font-size: 10px; text-transform: uppercase; font-weight: 850; letter-spacing: .09em; padding: 7px 10px; border-radius: 30px; }
+    .product-info { padding: 21px; display: flex; flex: 1; flex-direction: column; }
+    .product-type { color: #72877d; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
+    .product h3 { letter-spacing: -.035em; font-size: 20px; margin: 7px 0; }
+    .product p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 0 0 16px; flex: 1; }
+    .product-bottom { display: flex; align-items: center; gap: 7px; justify-content: space-between; flex-wrap: wrap; }
+    .price { font-size: 18px; font-weight: 850; white-space: nowrap; letter-spacing: -.04em; }
+    .add-button { background: var(--pine); color: #fff; border: 0; border-radius: 100px; padding: 10px 13px; font-size: 12px; font-weight: 750; cursor: pointer; }
+    .add-button:hover { background: #276751; }
+
+    .story { padding: 75px 0; background: #e9f0e7; }
+    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .story p { line-height: 1.8; color: #4f665b; max-width: 500px; }
+    .story-points { display: grid; gap: 13px; }
+    .story-point { display: flex; gap: 15px; align-items: flex-start; background: #f9fbf7; padding: 20px; border: 1px solid #dce8dc; border-radius: 17px; }
+    .point-number { background: var(--pine); color: var(--mint); min-width: 32px; height: 32px; border-radius: 10px; font-weight: 850; display: grid; place-items: center; }
+    .story-point h3 { margin: 0 0 3px; font-size: 16px; }
+    .story-point p { margin: 0; font-size: 13px; line-height: 1.5; }
+
+    .cta-section { padding: 72px 0; }
+    .cta-box { background: var(--pine); color: white; border-radius: 25px; padding: 45px 52px; display: flex; align-items: center; justify-content: space-between; gap: 25px; }
+    .cta-box h2 { margin: 0 0 8px; font-size: clamp(25px, 3.5vw, 40px); letter-spacing: -.055em; }
+    .cta-box p { margin: 0; line-height: 1.7; color: #c9e0d7; }
+    footer { background: var(--pine-dark); color: #d4e7dc; padding: 34px 0; }
+    .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 15px; font-size: 13px; }
+    .footer-links { display: flex; align-items: center; gap: 19px; flex-wrap: wrap; }
+    .footer-version { background: #22493d; border-radius: 30px; color: #c8f09d; padding: 7px 12px; font-size: 11px; font-weight: 800; }
+
+    .cart-backdrop { position: fixed; inset: 0; background: #03191196; z-index: 60; }
+    .cart-backdrop[hidden], .cart-panel[hidden] { display: none; }
+    .cart-panel { position: fixed; right: 0; top: 0; bottom: 0; width: min(440px, 100%); background: #fff; z-index: 61; padding: 28px; overflow-y: auto; box-shadow: -10px 0 50px #081e132b; }
+    .cart-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .cart-top h2 { font-size: 26px; margin: 0; letter-spacing: -.04em; }
+    .close-cart { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; background: white; cursor: pointer; font-size: 23px; }
+    .cart-empty { margin: 35px 0; line-height: 1.7; color: var(--muted); }
+    .cart-item { border-bottom: 1px solid var(--line); padding: 18px 0; display: flex; gap: 12px; justify-content: space-between; }
+    .cart-item strong { display: block; margin-bottom: 5px; }
+    .cart-item small { color: var(--muted); }
+    .qty-controls { display: flex; gap: 9px; align-items: center; }
+    .qty-controls button { border: 1px solid #cddbd2; border-radius: 8px; background: #f2f7f0; width: 27px; height: 27px; cursor: pointer; }
+    .cart-total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 800; margin-top: 25px; }
+    .demo-note { padding: 16px; background: #eef5eb; border-radius: 12px; font-size: 12px; color: #496351; line-height: 1.7; margin-top: 25px; }
+    .toast { position: fixed; z-index: 80; bottom: 24px; left: 50%; transform: translate(-50%, 130px); transition: transform .25s ease; border-radius: 12px; background: var(--pine-dark); color: white; padding: 13px 19px; box-shadow: 0 10px 35px #0b362444; font-size: 13px; }
+    .toast.show { transform: translate(-50%, 0); }
+
+    @media (max-width: 1000px) {
+      .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-grid { grid-template-columns: 1fr 1fr; }
+      .hero h1 { font-size: clamp(43px, 5.5vw, 70px); }
+    }
+    @media (max-width: 680px) {
+      .container { width: min(100% - 30px, 1160px); }
+      .announcement { font-size: 10px; }
+      .nav { min-height: 68px; }
+      .brand { font-size: 20px; }
+      .nav-links { display: none; }
+      .cart-button { padding: 9px 11px; font-size: 12px; }
+      .hero-grid { grid-template-columns: 1fr; padding-top: 52px; gap: 0; }
+      .hero h1 { font-size: clamp(45px, 10vw, 62px); }
+      .hero p { font-size: 15px; }
+      .hero-art { min-height: 275px; }
+      .hero-art::before { width: 270px; height: 270px; }
+      .hero-art::after { width: 210px; height: 210px; }
+      .hero-caption { bottom: 15px; font-size: 10px; }
+      .highlights-grid { grid-template-columns: 1fr; }
+      .highlight { justify-content: flex-start; padding: 12px 8px; }
+      .highlight + .highlight { border-left: 0; border-top: 1px solid #cddfcf; }
+      .section-head { align-items: start; flex-direction: column; gap: 12px; }
+      .catalog { padding: 58px 0; }
+      .products { gap: 12px; }
+      .product-visual { height: 145px; }
+      .product-info { padding: 15px; }
+      .product h3 { font-size: 17px; }
+      .product p { font-size: 12px; }
+      .price { font-size: 15px; }
+      .add-button { padding: 9px 12px; }
+      .story { padding: 58px 0; }
+      .story-grid { grid-template-columns: 1fr; gap: 20px; }
+      .cta-section { padding: 50px 0; }
+      .cta-box { padding: 32px 27px; align-items: start; flex-direction: column; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 390px) {
+      .products { grid-template-columns: 1fr; }
+      .product-visual { height: 200px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .btn, .toast { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#indhold">Gå til indhold</a>
+
+  <!-- Illustrationerne er SVG og kræver derfor ingen separate billedfiler. -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="sr-only" aria-hidden="true" focusable="false">
+    <symbol id="bike" viewBox="0 0 560 280">
+      <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="124" cy="190" r="72" stroke-width="12" />
+        <circle cx="438" cy="190" r="72" stroke-width="12" />
+        <circle cx="124" cy="190" r="60" stroke-width="2" opacity=".35" />
+        <circle cx="438" cy="190" r="60" stroke-width="2" opacity=".35" />
+        <path d="M124 190 223 99 274 190 124 190 M223 99 365 103 274 190 M365 103 438 190" stroke-width="13" />
+        <path d="M223 99 214 75 M195 75h40 M365 103l23-39 M376 62h53" stroke-width="12" />
+        <path d="M274 190l25 18 M255 174l19 16" stroke-width="10" />
+        <circle cx="274" cy="190" r="13" stroke-width="8" />
+        <path d="M410 73h19" stroke-width="9" />
+      </g>
+    </symbol>
+  </svg>
+
+  <div class="announcement">NORDICBIKE · CYKLER TIL HVERDAG OG EVENTYR · DEMOWEBSHOP</div>
+
+  <header>
+    <nav class="nav container" aria-label="Hovednavigation">
+      <a class="brand" href="#top" aria-label="NordicBike, gå til forsiden">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 560 280" fill="none"><use href="#bike"></use></svg>
+        </span>
+        NORDICBIKE<span style="color:#62916d">.</span>
+      </a>
+      <div class="nav-links">
+        <a href="#cykler">Vores cykler</a>
+        <a href="#om-os">Om NordicBike</a>
+        <a href="#kontakt">Kontakt</a>
+      </div>
+      <button type="button" id="open-cart" class="cart-button" aria-label="Åbn demokurv">
+        Kurv <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="indhold">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-grid container">
+        <div>
+          <div class="eyebrow">Fremad på din måde</div>
+          <h1 id="hero-title">Mere frihed.<br><span>To hjul.</span></h1>
+          <p>Fra morgenpendling til weekendens omveje. Find din næste cykel hos NordicBike – skabt til bevægelse og nye oplevelser.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#cykler">Udforsk cyklerne &rarr;</a>
+            <a class="btn btn-outline" href="#om-os">Mød NordicBike</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <svg class="hero-bike" viewBox="0 0 560 280" fill="none"><use href="#bike"></use></svg>
+          <span class="hero-caption">Din vej. Dit tempo.</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="highlights" aria-label="NordicBikes værdier">
+      <div class="highlights-grid container">
+        <div class="highlight"><span aria-hidden="true">✦</span> En cykel til hverdagens ture</div>
+        <div class="highlight"><span aria-hidden="true">◎</span> Fokus på enkelhed og kvalitet</div>
+        <div class="highlight"><span aria-hidden="true">↗</span> Plads til nye eventyr</div>
+      </div>
+    </div>
+
+    <section class="catalog container" id="cykler" aria-labelledby="catalog-title">
+      <div class="section-head">
+        <div>
+          <span class="section-label">Udvalgte modeller</span>
+          <h2 id="catalog-title">Find din næste cykel.</h2>
+        </div>
+        <p>Uanset om du pendler gennem byen eller søger nye stier, er der en NordicBike til turen.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filtrer cykler">
+        <button type="button" class="filter active" data-filter="alle" aria-pressed="true">Alle cykler</button>
+        <button type="button" class="filter" data-filter="city" aria-pressed="false">Citybikes</button>
+        <button type="button" class="filter" data-filter="el" aria-pressed="false">Elcykler</button>
+        <button type="button" class="filter" data-filter="gravel" aria-pressed="false">Gravel</button>
+      </div>
+
+      <div class="products" id="product-list">
+        <article class="product" data-category="city">
+          <div class="product-visual sage">
+            <span class="product-tag">Hverdagens favorit</span>
+            <svg viewBox="0 0 560 280" role="img" aria-label="Illustration af citybike"><use href="#bike"></use></svg>
+          </div>
+          <div class="product-info">
+            <span class="product-type">Citybike</span>
+            <h3>Nordic City 7</h3>
+            <p>Den klassiske hverdagscykel, der gør turen gennem byen til en fornøjelse.</p>
+            <div class="product-bottom">
+              <span class="price">4.999 kr.</span>
+              <button type="button" class="add-button" data-id="city7" data-name="Nordic City 7" data-price="4999">+ Tilføj</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product" data-category="el">
+          <div class="product-visual blue">
+            <span class="product-tag">Ekstra medvind</span>
+            <svg viewBox="0 0 560 280" role="img" aria-label="Illustration af elcykel"><use href="#bike"></use></svg>
+          </div>
+          <div class="product-info">
+            <span class="product-type">Elcykel</span>
+            <h3>Nordic Flow E</h3>
+            <p>Kom længere omkring med let og behagelig assistance i pedalerne.</p>
+            <div class="product-bottom">
+              <span class="price">17.999 kr.</span>
+              <button type="button" class="add-button" data-id="flowe" data-name="Nordic Flow E" data-price="17999">+ Tilføj</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product" data-category="gravel">
+          <div class="product-visual peach">
+            <span class="product-tag">Til nye veje</span>
+            <svg viewBox="0 0 560 280" role="img" aria-label="Illustration af gravelcykel"><use href="#bike"></use></svg>
+          </div>
+          <div class="product-info">
+            <span class="product-type">Gravel</span>
+            <h3>Nordic Trail</h3>
+            <p>Tag den lange vej hjem, og oplev både asfalt og grus på samme tur.</p>
+            <div class="product-bottom">
+              <span class="price">9.499 kr.</span>
+              <button type="button" class="add-button" data-id="trail" data-name="Nordic Trail" data-price="9499">+ Tilføj</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="product" data-category="city">
+          <div class="product-visual lime">
+            <span class="product-tag">Let og enkel</span>
+            <svg viewBox="0 0 560 280" role="img" aria-label="Illustration af citybike"><use href="#bike"></use></svg>
+          </div>
+          <div class="product-info">
+            <span class="product-type">Citybike</span>
+            <h3>Nordic Commuter</h3>
+            <p>En enkel og komfortabel partner til både korte og lange pendlerture.</p>
+            <div class="product-bottom">
+              <span class="price">6.499 kr.</span>
+              <button type="button" class="add-button" data-id="commuter" data-name="Nordic Commuter" data-price="6499">+ Tilføj</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="story" id="om-os" aria-labelledby="about-title">
+      <div class="story-grid container">
+        <div>
+          <span class="section-label">Hvem er vi?</span>
+          <h2 id="about-title">Gode oplevelser starter med en cykeltur.</h2>
+          <p>Hos NordicBike tror vi på, at cyklen giver mere end transport. Den giver frihed, frisk luft og lyst til at udforske. Derfor har vi samlet modeller til både hverdag og fritid.</p>
+          <p>Vi vil gøre det enkelt at finde en cykel, der passer til netop din måde at komme frem på.</p>
+        </div>
+        <div class="story-points">
+          <div class="story-point"><span class="point-number">01</span><div><h3>Find din stil</h3><p>Vælg mellem bycykler, elcykler og gravelmodeller.</p></div></div>
+          <div class="story-point"><span class="point-number">02</span><div><h3>Udforsk detaljerne</h3><p>Sammenlign modellerne og find den type, der passer til dig.</p></div></div>
+          <div class="story-point"><span class="point-number">03</span><div><h3>Tag afsted</h3><p>Den bedste vej er nogle gange den, du ikke har prøvet endnu.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section container" id="kontakt" aria-labelledby="contact-title">
+      <div class="cta-box">
+        <div>
+          <h2 id="contact-title">Klar til næste tur?</h2>
+          <p>Udforsk modellerne og find inspiration til dit næste cykeleventyr.</p>
+        </div>
+        <a class="btn btn-primary" href="#cykler">Se vores cykler &rarr;</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner container">
+      <strong>NORDICBIKE.</strong>
+      <div class="footer-links"><a href="#cykler">Cykler</a><a href="#om-os">Om os</a><a href="#kontakt">Kontakt</a></div>
+      <span class="footer-version">Version 1.0</span>
+      <span>© 2026 NordicBike · Undervisningsdemo</span>
+    </div>
+  </footer>
+
+  <div class="cart-backdrop" id="cart-backdrop" hidden></div>
+  <aside class="cart-panel" id="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cart-title" hidden>
+    <div class="cart-top">
+      <h2 id="cart-title">Din demokurv</h2>
+      <button type="button" class="close-cart" id="close-cart" aria-label="Luk kurv">×</button>
+    </div>
+    <div id="cart-items" aria-live="polite"></div>
+    <div id="cart-total" class="cart-total" hidden><span>I alt</span><span id="cart-total-amount">0 kr.</span></div>
+    <p class="demo-note">Dette er en demo til NordicBikes cloud-undervisning. Kurven fungerer i browseren, men du kan ikke gennemføre køb, og der gemmes ingen personoplysninger.</p>
+  </aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // Produkterne på siden er fiktive og anvendes kun i denne undervisningsdemo.
+    const cart = new Map();
+    const cartCount = document.getElementById('cart-count');
+    const panel = document.getElementById('cart-panel');
+    const backdrop = document.getElementById('cart-backdrop');
+    const cartItems = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    const cartTotalAmount = document.getElementById('cart-total-amount');
+    const closeButton = document.getElementById('close-cart');
+    const openButton = document.getElementById('open-cart');
+    const toast = document.getElementById('toast');
+    const formatPrice = price => new Intl.NumberFormat('da-DK', { style: 'currency', currency: 'DKK', maximumFractionDigits: 0 }).format(price);
+    let toastTimeout;
+    let previousFocus = null;
+
+    function updateCart() {
+      let count = 0;
+      let sum = 0;
+      cartItems.replaceChildren();
+
+      for (const [id, item] of cart) {
+        count += item.quantity;
+        sum += item.price * item.quantity;
+        const line = document.createElement('div');
+        line.className = 'cart-item';
+        const detail = document.createElement('div');
+        const name = document.createElement('strong');
+        name.textContent = item.name;
+        const price = document.createElement('small');
+        price.textContent = formatPrice(item.price) + ' pr. stk.';
+        detail.append(name, price);
+        const controls = document.createElement('div');
+        controls.className = 'qty-controls';
+        const minus = document.createElement('button');
+        minus.type = 'button'; minus.textContent = '−'; minus.setAttribute('aria-label', 'Fjern én ' + item.name);
+        minus.addEventListener('click', () => changeQuantity(id, -1));
+        const number = document.createElement('span');
+        number.textContent = item.quantity;
+        const plus = document.createElement('button');
+        plus.type = 'button'; plus.textContent = '+'; plus.setAttribute('aria-label', 'Tilføj én ' + item.name);
+        plus.addEventListener('click', () => changeQuantity(id, 1));
+        controls.append(minus, number, plus);
+        line.append(detail, controls);
+        cartItems.append(line);
+      }
+
+      cartCount.textContent = count;
+      cartTotal.hidden = count === 0;
+      cartTotalAmount.textContent = formatPrice(sum);
+      if (count === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'cart-empty';
+        empty.textContent = 'Din kurv er tom. Vælg en cykel for at komme i gang.';
+        cartItems.append(empty);
+      }
+    }
+
+    function changeQuantity(id, amount) {
+      const item = cart.get(id);
+      if (!item) return;
+      item.quantity += amount;
+      if (item.quantity <= 0) cart.delete(id);
+      updateCart();
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    document.querySelectorAll('.add-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const { id, name, price } = button.dataset;
+        if (cart.has(id)) cart.get(id).quantity += 1;
+        else cart.set(id, { name, price: Number(price), quantity: 1 });
+        updateCart();
+        showToast(name + ' er lagt i din demokurv');
+      });
+    });
+
+    document.querySelectorAll('.filter').forEach(button => {
+      button.addEventListener('click', () => {
+        const category = button.dataset.filter;
+        document.querySelectorAll('.filter').forEach(filter => {
+          const active = filter === button;
+          filter.classList.toggle('active', active);
+          filter.setAttribute('aria-pressed', String(active));
+        });
+        document.querySelectorAll('.product').forEach(product => {
+          product.hidden = category !== 'alle' && product.dataset.category !== category;
+        });
+      });
+    });
+
+    function openCart() {
+      previousFocus = document.activeElement;
+      panel.hidden = false;
+      backdrop.hidden = false;
+      document.body.style.overflow = 'hidden';
+      closeButton.focus();
+    }
+    function closeCart() {
+      panel.hidden = true;
+      backdrop.hidden = true;
+      document.body.style.overflow = '';
+      if (previousFocus && typeof previousFocus.focus === 'function') previousFocus.focus();
+    }
+    openButton.addEventListener('click', openCart);
+    closeButton.addEventListener('click', closeCart);
+    backdrop.addEventListener('click', closeCart);
+    document.addEventListener('keydown', event => {
+      if (panel.hidden) return;
+      if (event.key === 'Escape') closeCart();
+      if (event.key === 'Tab') {
+        const focusable = [...panel.querySelectorAll('button:not([disabled]), a[href]')];
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    });
+    updateCart();
+  </script>
+</body>
+</html>
